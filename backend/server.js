@@ -1277,6 +1277,12 @@ function verificarToken(req, res, next) {
 
 async function enviarCorreoConfirmacion(email, token) {
     try {
+
+        // ✅ DEBUG CRÍTICO
+        console.log("EMAIL_USER:", process.env.EMAIL_USER);
+        console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
+        console.log("Intentando enviar correo a:", email);
+
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 587,
