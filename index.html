@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MicroGEST</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+<!-- ===== LOGIN ===== -->
+<section id="login" class="seccion login-container">
+
+    <div class="login-card">
+
+        <!-- LOGO -->
+        <h1 class="logo">MicroGEST</h1>
+        <p class="subtitle">Gestiona tu dinero de forma inteligente</p>
+
+        <div class="bloque-login">
+            <h2>Iniciar sesión</h2>
+
+            <input type="email" id="email" placeholder="Correo electrónico">
+            <div class="input-password">
+                <input type="password" id="password" placeholder="Contraseña">
+                <span class="toggle-password" onclick="togglePassword('password', this)">
+                    <i data-lucide="eye" class="icon-password"></i>
+                </span>
+            </div>
+
+            <button id="btnLogin" class="btn-primary">Entrar</button>
+
+            <div class="divider">¿Eres nuevo por aqui?</div>
+
+           <button class="btn-secondary" onclick="mostrarRegistro()">
+                Crear cuenta
+            </button>
+        </div>
+
+    </div>
+
+</section>
+<!-- ===== REGISTRO ===== -->
+<section id="registro" class="seccion login-container oculto">
+
+    <div class="login-card">
+
+        <h1 class="logo">MicroGEST</h1>
+        <p class="subtitle">Crea tu cuenta</p>
+
+        <h2>Registrarse</h2>
+
+        <input type="email" id="emailReg" placeholder="Correo">
+        <div class="input-password">
+            <input type="password" id="passwordReg" placeholder="Contraseña">
+            <span class="toggle-password" onclick="togglePassword('passwordReg', this)">
+                <i data-lucide="eye" class="icon-password"></i>
+            </span>
+        </div>
+
+        <ul class="password-rules">
+            <li id="rule-length">Mínimo 8 caracteres</li>
+            <li id="rule-upper">Una mayúscula</li>
+            <li id="rule-lower">Una minúscula</li>
+            <li id="rule-number">Un número</li>
+            <li id="rule-symbol">Un símbolo</li>
+        </ul>
+
+        <button id="btnRegistrar" class="btn-secondary">Registrarse</button>
+
+        <div class="divider">¿Ya tienes cuenta?</div>
+
+        <button class="btn-primary" onclick="mostrarLogin()">
+            Iniciar sesión
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ===== HEADER HORIZONTAL ===== -->
+<header class="navbar oculto" id="navbar">
+    <div class="navbar-container">
+        <h1 class="navbar-logo">MicroGEST</h1>
+        <nav class="navbar-nav">
+            <button class="navbar-btn" onclick="mostrarSeccion('dashboard')"> <i data-lucide="layout-dashboard"></i> Dashboard</button>
+            <button class="navbar-btn" onclick="mostrarSeccion('ingresos')"> <i data-lucide="wallet"></i> Ingresos</button>
+            <button class="navbar-btn" onclick="mostrarSeccion('gastos')"> <i data-lucide="credit-card"></i> Gastos</button>
+            <button class="navbar-btn" onclick="mostrarSeccion('configuracion')"><i data-lucide="settings"></i> Configuración</button>
+            <div class="usuario-menu">
+
+                <button id="btnUsuario" class="navbar-btn usuario-icono">
+                    <i data-lucide="user"></i>
+                </button>
+
+                <div id="dropdownUsuario" class="dropdown-usuario oculto">
+                    <p id="usuarioNombre" class="usuario-nombre">
+                        <span class="label">Usuario:</span>
+                        <span class="valor">—</span>
+                    </p>
+
+                    <button id="btnLogoutDropdown" class="btn-logout-dropdown">
+                        Cerrar sesión
+                    </button>
+                </div>
+
+            </div>
+        </nav>
+    </div>
+</header>
+
+<!-- ===== CONTENIDO PRINCIPAL ===== -->
+<main class="contenido oculto" id="app">
+
+        <!-- ===== DASHBOARD ===== -->
+        <section id="dashboard" class="seccion oculto">
+            <p>Bienvenido a tu sistema de control de ingresos.</p>
+
+            <div id="tabsSucursales"></div>
+
+            <h2 class="titulo-seccion">Resumen financiero (ingresos)</h2>
+            <div class="cards-resumen">
+
+                <div class="card-resumen">
+                    <span>Hoy</span>
+                    <h2 id="totalHoy">$0</h2>
+                    <small>Ingresos del día</small>
+                </div>
+
+                <div class="card-resumen">
+                    <span>Este mes</span>
+                    <h2 id="totalMes">$0</h2>
+                    <small>Ingresos actuales</small>
+                </div>
+
+                <div class="card-resumen">
+                    <span>Mes anterior</span>
+                    <h2 id="totalMesAnterior">$0</h2>
+                    <small>Comparación previa</small>
+                </div>
+
+                <div class="card-resumen">
+                    <span>Variación</span>
+                    <h2 id="variacionMensual">0%</h2>
+                    <small>Crecimiento mensual</small>
+                </div>
+
+            </div>
+
+            <div id="alertaFinanciera" style="margin:10px 0;font-weight:bold;"></div>
+
+            <h2 class="titulo-seccion">Resumen financiero (gastos)</h2>
+            <div class="cards-resumen">
+
+                <div class="card-resumen">
+                    <span>Hoy</span>
+                    <h2 id="gastosHoy">$0</h2>
+                    <small>Gastos del día</small>
+                </div>
+
+                <div class="card-resumen">
+                    <span>Este mes</span>
+                    <h2 id="gastosMes">$0</h2>
+                    <small>Gastos actuales</small>
+                </div>
+
+                <div class="card-resumen">
+                    <span>Mes anterior</span>
+                    <h2 id="gastosMesAnterior">$0</h2>
+                    <small>Comparación previa</small>
+                </div>
+
+
+            </div>
+
+            <h3 class="titulo-seccion"><i data-lucide="target"></i>Meta mensual</h3>
+
+            <div class="card-meta">
+                <p id="textoMeta">$0</p>
+
+                <div class="alcancia-container">
+                    <div class="relleno-wrapper">
+                        <div id="rellenoCerdito"></div>
+                    </div>
+
+                    <img id="cerditoBase" src="/img/cerdito.png">
+                </div>
+
+                <p id="mensajeMeta"></p>
+
+                <input type="number" id="metaMensual" placeholder="Ej. $5000000">
+
+                <div class="acciones-meta">
+                    <button id="guardarMeta">Guardar meta</button>
+                    <button id="eliminarMeta">Eliminar meta</button>
+                </div>
+
+            </div>
+
+            <h2 class="titulo-seccion">Indicadores clave</h2>
+
+            <div class="cards">
+                <div class="card">
+                    <h3><i data-lucide="line-chart"></i> Promedio diario</h3>
+                    <p id="promedioDiario">0</p>
+                </div>
+
+                <div class="card">
+                    <h3><i data-lucide="trending-up"></i> Mejor día del mes</h3>
+                    <p id="mejorDia">—</p>
+                </div>
+
+                <div class="card">
+                    <h3><i data-lucide="trending-down"></i> Día con menos ingresos</h3>
+                    <p id="peorDia">—</p>
+                </div>
+
+                <div class="card">
+                    <h3>💰 Balance mensual</h3>
+                    <p id="balanceMes">$0</p>
+                </div>
+                
+                <div class="card">
+                    <h3>📊 Promedio gasto diario</h3>
+                    <p id="promedioGasto">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>💸 Día con más gasto</h3>
+                    <p id="peorDiaGasto">—</p>
+                </div>
+
+
+            </div>
+
+            <div class="card">
+                <h3> <i data-lucide="bar-chart-3"></i> Promedio histórico</h3>
+                <p id="promedioHistorico">$0</p>
+                <small id="comparacionHistorica"></small>
+            </div>
+
+            <!-- ===== ANÁLISIS DE INGRESOS (GRÁFICAS INTEGRADAS) ===== -->
+            <section class="dashboard-graficas">
+                <h2 class="titulo-seccion">Análisis de ingresos</h2>
+                <div class="chart-container">
+                    <div id="graficaIngresos"></div>
+                </div>
+            </section>
+        </section>
+
+        <!-- ===== INGRESOS ===== -->
+        <section id="ingresos" class="seccion oculto">
+            <div class="contenedor-formularios">
+                <div class="card-form ingreso">
+                    <h2 class="titulo-seccion">Registrar nuevo ingreso</h2>
+                <form id="formIngreso">
+
+                    <input type="number" id="monto" placeholder="Monto" required>
+
+                    <select id="tipo" required></select>
+
+                    <input type="text" id="descripcion" placeholder="Descripción">
+
+                    <div id="fechaIngresoContainer" style="display:none;">
+                        <input type="date" id="fecha">
+                    </div>
+
+                    <!-- 🔥 CONTENEDOR FINAL -->
+                    <div class="acciones-formulario">
+                        <button type="submit">Guardar ingreso</button>
+
+                        <label class="toggle-avanzado">
+                            Cambiar fecha
+                            <input type="checkbox" id="toggleFechaIngreso">
+                        </label>
+                    </div>
+
+                </form>
+                </div>
+                
+                <div class="card-form ingreso chart-card">
+
+                    <h2 class="titulo-seccion">
+                        Distribución de ingresos
+                    </h2>
+
+                    <div id="graficaDonaIngresos"></div>
+
+                </div>
+
+            </div>
+
+            <h2 class="titulo-seccion">Historial de ingresos</h2>
+
+            <div style="margin-bottom:10px;">
+                <button id="btnFiltros">
+                    <i data-lucide="filter"></i> Filtros
+                </button>
+                <div id="panelFiltros" style="display:none; margin-top:15px;">
+
+                    <label>Buscar ingresos por:</label>
+
+                    <select id="tipoFiltro" required>
+                        <option value="">Seleccione</option>
+                        <option value="tipo">Tipo</option>
+                        <option value="monto">Monto</option>
+                        <option value="descripcion">Descripción</option>
+                        <option value="fecha">Fecha</option>
+                    </select>
+
+                    <div id="inputFiltro" style="margin-top:10px;"></div>
+
+                    <div class="acciones-filtro">
+                    <button id="btnAplicarFiltro">Aplicar filtro</button>
+                    <button id="btnLimpiarFiltro">Limpiar</button>
+                    </div>
+
+                </div>
+
+                <input type="date" id="fechaFiltro" style="display:none;">
+            </div>
+            
+            <div class="total-wrapper">
+                <div class="total-ingresos-card">
+                    <span class="total-label">Total de ingresos</span>
+                    <h2 id="sumaIngresos">$0</h2>
+                </div>
+            </div>
+
+
+            <div class="contenedor-tablas">
+                <table border="1" id="tablaIngresos">
+                    <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <div class="paginacion">
+                    <span id="contadorIngresos">0 ingresos</span>
+
+                    <button id="btnPrimero" type="button" title="Primera página">
+                        <i data-lucide="chevrons-left"></i>
+                    </button>
+
+                    <button id="btnPrev" type="button" title="Página anterior">
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+
+                    <span>
+                        <span id="paginaActual">1</span> de <span id="totalPaginas">1</span>
+                    </span>
+
+                    <button id="btnNext" type="button" title="Página siguiente">
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+
+                    <button id="btnUltimo" type="button" title="Última página">
+                        <i data-lucide="chevrons-right"></i>
+                    </button>
+                </div>
+
+                <div id="panelEditar" class="panel-editar oculto">
+                    <h3>Editar ingreso</h3>
+                    <form id="formEditar">
+                        <label>Fecha</label>
+                        <input type="date" id="editFecha" required>
+
+                        <label>Monto</label>
+                        <input type="number" id="editMonto" required>
+
+                        
+                        <label>Tipo de ingreso</label>
+                        <select id="editTipo" required>
+                            <option value="">Seleccione un tipo</option>
+                            <option value="1">Servicios</option>
+                            <option value="2">Canasta familiar</option>
+                            <option value="3">Viajes</option>
+                            <option value="4">Ventas</option>
+                            <option value="5">Honorarios</option>
+                            <option value="6">Otros</option>
+                        </select>
+
+
+                        <label>Descripción</label>
+                        <input type="text" id="editDescripcion">
+
+                        <div class="acciones">
+                            <button type="submit">Guardar</button>
+                            <button type="button" id="btnCancelar">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ===== GASTOS ===== -->
+        <section id="gastos" class="seccion oculto">
+
+            <!-- ===== FORMULARIO + TOTAL ===== -->
+            <div class="contenedor-formularios">
+
+                <!-- FORMULARIO DE GASTOS -->
+                <div class="card-form gasto">
+                    <h2 class="titulo-seccion">Registrar nuevo gasto</h2>
+
+                    <form id="formGasto">
+
+                        <input type="number" id="montoGasto" placeholder="Monto" required>
+
+                        <select id="tipoGasto" required></select>
+
+                        <input type="text" id="descripcionGasto" placeholder="Descripción">
+
+                        <div id="fechaGastoContainer" style="display:none;">
+                            <input type="date" id="fechaGasto">
+                        </div>
+
+                        <div class="acciones-formulario">
+                            <button type="submit">Guardar gasto</button>
+
+                            <label class="toggle-avanzado">
+                                Cambiar fecha
+                                <input type="checkbox" id="toggleFechaGasto">
+                            </label>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- BLOQUE ESPEJO DE LA GRÁFICA (MISMA POSICIÓN) -->
+                <div class="card-form gasto chart-card">
+
+                    <h2 class="titulo-seccion">
+                        Distribución de gastos
+                    </h2>
+
+                    <div id="graficaDonaGastos"></div>
+
+                </div>
+
+            </div>
+
+            <!-- ===== HISTORIAL ===== -->
+            <h2 class="titulo-seccion">Historial de gastos</h2>
+
+            <!-- ===== CONTROLES ===== -->
+            <div style="margin-bottom:10px;">
+
+                <button id="btnFiltrosGastos">
+                    <i data-lucide="filter"></i> Filtros
+                </button>
+
+                <!-- PANEL FILTROS GASTOS -->
+                <div id="panelFiltrosGastos" style="display:none; margin-top:15px;">
+
+                    <label>Buscar gastos por:</label>
+
+                    <select id="tipoFiltroGastos">
+                        <option value="">Seleccione</option>
+                        <option value="tipo">Tipo</option>
+                        <option value="monto">Monto</option>
+                        <option value="descripcion">Descripción</option>
+                        <option value="fecha">Fecha</option>
+                    </select>
+
+                    <div id="inputFiltroGastos" style="margin-top:10px;"></div>
+
+                    <div class="acciones-filtro">
+                        <button id="btnAplicarFiltroGastos">Aplicar filtro</button>
+                        <button id="btnLimpiarFiltroGastos">Limpiar</button>
+                    </div>
+
+                </div>
+
+            </div>
+
+                <div class="total-wrapper">
+                    <div class="total-ingresos-card gasto-total">
+                        <span class="total-label">Total de gastos</span>
+                        <h2 id="sumaGastos">$0</h2>
+                    </div>
+                </div>
+
+            
+            <div class="contenedor-tablas">
+                <table border="1" id="tablaGastos">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <!-- ===== PAGINACIÓN ===== -->
+                <div class="paginacion">
+
+                    <span id="contadorGastos">0 gastos</span>
+
+                    <button id="btnPrimeroGasto" type="button" title="Primera página">
+                        <i data-lucide="chevrons-left"></i>
+                    </button>
+
+                    <button id="btnPrevGasto" type="button" title="Página anterior">
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+
+                    <span>
+                        <span id="paginaActualGasto">1</span> de
+                        <span id="totalPaginasGasto">1</span>
+                    </span>
+
+                    <button id="btnNextGasto" type="button" title="Página siguiente">
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+
+                    <button id="btnUltimoGasto" type="button" title="Última página">
+                        <i data-lucide="chevrons-right"></i>
+                    </button>
+
+                </div>
+                <div id="panelEditarGasto" class="panel-editar oculto">
+                    <h3>Editar gasto</h3>
+
+                    <form id="formEditarGasto">
+
+                        <label>Fecha</label>
+                        <input type="date" id="editFechaGasto" required>
+
+                        <label>Monto</label>
+                        <input type="number" id="editMontoGasto" required>
+
+                        <label>Tipo</label>
+                        <select id="editTipoGasto" required></select>
+
+                        <label>Descripción</label>
+                        <input type="text" id="editDescripcionGasto">
+
+                        <div class="acciones">
+                            <button type="submit">Guardar</button>
+                            <button type="button" id="btnCancelarGasto">Cancelar</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ===== CONFIGURACIÓN ===== -->
+        <section id="configuracion" class="seccion oculto">
+
+
+            <div class="config-header">
+                <button id="btnEliminados" onclick="toggleEliminados()">
+                    Ver movimientos borrados
+                </button>
+                <button id="btnExtracto">📄 Generar extracto</button>
+            </div>
+            <!-- MODAL REPORTE -->
+            <div id="modalReporte" class="modal-reporte oculto">
+
+                <div class="modal-contenido-reporte">
+
+                    <h3>Generar extracto</h3>
+
+                    <select id="tipoFiltroReporte">
+                        <option value="">Seleccione filtro</option>
+                        <option value="tipo">Tipo</option>
+                        <option value="monto">Monto</option>
+                        <option value="descripcion">Descripción</option>
+                        <option value="fecha">Fecha</option>
+                    </select>
+
+                    <div id="inputReporte"></div>
+
+                    <div class="acciones-reporte">
+                        <button id="btnEnviarReporte">Enviar</button>
+                        <button id="btnCancelarReporte">Cancelar</button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CONTENEDOR -->
+            <div id="contenedorEliminados" class="card-eliminados">
+
+                <!-- INGRESOS -->
+                <div class="seccion-header">
+                    <span class="badge-seccion">
+                        <i data-lucide="wallet"></i>
+                        Ingresos eliminados
+                    </span>
+
+                    <button class="btn-filtro" onclick="abrirFiltrosEliminados('ingreso')">
+                        <i data-lucide="filter"></i> Filtros
+                    </button>
+                </div>
+
+                <div id="panelFiltrosEliminadosIngresos" style="display:none">
+                    <select id="tipoFiltroEliminadosIngresos">
+                        <option value="">Seleccione</option>
+                        <option value="tipo">Tipo</option>
+                        <option value="monto">Monto</option>
+                        <option value="descripcion">Descripción</option>
+                        <option value="fecha">Fecha</option>
+                    </select>
+
+                    <div id="inputFiltroEliminadosIngresos"></div>
+
+                    <button onclick="aplicarFiltroEliminados('ingreso')">Aplicar</button>
+                    <button onclick="limpiarFiltrosEliminados('ingreso')">Limpiar</button>
+                </div>
+
+                <div class="contenedor-tablas">
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEliminadosIngresos"></tbody>
+                    </table>
+                    <div class="paginacion-eliminados">
+
+                        <span id="contadorEliminadosIngresos"></span>
+
+                        <button id="btnPrimeroEliminadosIngresos" onclick="cambiarPaginaEliminados('ingreso', -100)">
+                            <i data-lucide="chevrons-left"></i>
+                        </button>
+
+                        <button id="btnPrevEliminadosIngresos" onclick="cambiarPaginaEliminados('ingreso', -1)">
+                            <i data-lucide="chevron-left"></i>
+                        </button>
+
+                        <span>
+                            <span id="paginaIngresosEliminados">1</span>
+                            de
+                            <span id="totalPaginasIngresosEliminados">1</span>
+                        </span>
+
+                        <button id="btnNextEliminadosIngresos" onclick="cambiarPaginaEliminados('ingreso', 1)">
+                            <i data-lucide="chevron-right"></i>
+                        </button>
+
+                        <button id="btnUltimoEliminadosIngresos" onclick="cambiarPaginaEliminados('ingreso', 100)">
+                            <i data-lucide="chevrons-right"></i>
+                        </button>
+
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- GASTOS -->
+                <div class="seccion-header">
+                    <span class="badge-seccion">
+                        <i data-lucide="credit-card"></i>
+                        Gastos eliminados
+                    </span>
+
+                    <button class="btn-filtro" onclick="abrirFiltrosEliminados('gasto')">
+                        <i data-lucide="filter"></i> Filtros
+                    </button>
+                </div>
+
+                <div id="panelFiltrosEliminadosGastos" style="display:none">
+                    <select id="tipoFiltroEliminadosGastos">
+                        <option value="">Seleccione</option>
+                        <option value="tipo">Tipo</option>
+                        <option value="monto">Monto</option>
+                        <option value="descripcion">Descripción</option>
+                        <option value="fecha">Fecha</option>
+                    </select>
+
+                    <div id="inputFiltroEliminadosGastos"></div>
+
+                    <button onclick="aplicarFiltroEliminados('gasto')">Aplicar</button>
+                    <button onclick="limpiarFiltrosEliminados('gasto')">Limpiar</button>
+                </div>
+
+                <div class="contenedor-tablas">
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEliminadosGastos"></tbody>
+                    </table>
+                    <div class="paginacion-eliminados">
+
+                        <span id="contadorEliminadosGastos"></span>
+
+                        <button id="btnPrimeroEliminadosGastos" onclick="cambiarPaginaEliminados('gasto', -100)">
+                            <i data-lucide="chevrons-left"></i>
+                        </button>
+
+                        <button id="btnPrevEliminadosGastos" onclick="cambiarPaginaEliminados('gasto', -1)">
+                            <i data-lucide="chevron-left"></i>
+                        </button>
+
+                        <span>
+                            <span id="paginaEliminadosGastos">1</span>
+                            de
+                            <span id="totalPaginasEliminadosGastos">1</span>
+                        </span>
+
+                        <button id="btnNextEliminadosGastos" onclick="cambiarPaginaEliminados('gasto', 1)">
+                            <i data-lucide="chevron-right"></i>
+                        </button>
+
+                        <button id="btnUltimoEliminadosGastos" onclick="cambiarPaginaEliminados('gasto', 100)">
+                            <i data-lucide="chevrons-right"></i>
+                        </button>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="script.js"></script>
+
+<div id="modal" class="modal oculto">
+  <div class="modal-box">
+
+    <div id="modal-icono" class="modal-icono"></div>
+
+    <h2 id="modal-titulo"></h2>
+    <p id="modal-mensaje"></p>
+
+    <div id="modal-botones" class="modal-botones"></div>
+
+  </div>
+</div>
+</body>
+</html>
