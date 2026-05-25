@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.20.0",
     "nodemailer": "^8.0.7",
-    "pdfkit": "^0.18.0"
+    "pdfkit": "^0.18.0",
+    "resend": "^6.12.3"
   }
 }
