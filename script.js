@@ -1,3 +1,4 @@
+const API_URL = "https://microgest-production.up.railway.app";
 let ingresoEditandoId = null;
 let sucursalActual = 1;
 let modoFiltro = false;
@@ -271,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             window.filtrosActivos = Object.fromEntries(params.entries());
 
-            let url = 'http://localhost:3000/movimientos?' + params.toString();
+            let url = `${API_URL}/movimientos?` + params.toString();
             url += '&categoria=ingreso';
 
             const data = await fetchConToken(url);
@@ -423,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const data = await fetchConToken('http://localhost:3000/movimientos', {
+                const data = await fetchConToken(`${API_URL}/movimientos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(gasto)
@@ -484,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnEliminarMeta.addEventListener('click', async () => {
 
             try {
-                const data = await fetchConToken('http://localhost:3000/meta', {
+                const data = await fetchConToken(`${API_URL}/meta`, {
                     method: 'DELETE'
                 });
 
@@ -548,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         try {
-            const data = await fetchConToken('http://localhost:3000/movimientos', {
+            const data = await fetchConToken(`${API_URL}/movimientos`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -604,7 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const result = await fetchConToken(
-                `http://localhost:3000/movimientos/${ingresoEditandoId}`,
+                `${API_URL}/movimientos/${ingresoEditandoId}`,
                 {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -644,7 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const result = await fetchConToken(
-                `http://localhost:3000/movimientos/${gastoEditandoId}`,
+                `${API_URL}/movimientos/${gastoEditandoId}`,
                 {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -785,7 +786,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
 
                 const res = await fetch(
-                    'http://localhost:3000/reporte?' + params.toString(),
+                    `${API_URL}/reporte?` + params.toString(),
                     {
                         headers: {
                             Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -853,7 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!email || !password) return;
 
         try {
-            const res = await fetch('http://localhost:3000/auth/register', {
+            const res = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -958,7 +959,7 @@ async function eliminarIngreso(id) {
     mostrarModal("confirm", "Confirmación", "¿Seguro que deseas eliminar este ingreso?", async () => {
 
         try {
-            const data = await fetchConToken(`http://localhost:3000/movimientos/${id}`, {
+            const data = await fetchConToken(`${API_URL}/movimientos/${id}`, {
                 method: 'DELETE'
             });
 
@@ -984,7 +985,7 @@ function eliminarGasto(id) {
     mostrarModal("confirm", "Confirmación", "¿Seguro que deseas eliminar este gasto?", async () => {
 
         try {
-            const data = await fetchConToken(`http://localhost:3000/movimientos/${id}`, {
+            const data = await fetchConToken(`${API_URL}/movimientos/${id}`, {
                 method: 'DELETE'
             });
 
@@ -1046,7 +1047,7 @@ function formatearFecha(fechaISO) {
 
 async function cargarResumen() {
     try {
-        const data = await fetchConToken('http://localhost:3000/movimientos/resumen');
+        const data = await fetchConToken(`${API_URL}/movimientos/resumen`);
 
         document.getElementById('totalHoy').textContent =
             formatoMoneda(data.ingresos_hoy || 0);
@@ -1195,7 +1196,7 @@ async function cargarGrafica() {
 
     if (seccionActual === 'especifico') return;
 
-    const url = 'http://localhost:3000/movimientos/por-dia';
+    const url = `${API_URL}/movimientos/por-dia`;
 
     try {
         const data = await fetchConToken(url);
@@ -1322,7 +1323,7 @@ async function cargarGrafica() {
 
 async function cargarIndicadores() {
     try {
-        const data = await fetchConToken('http://localhost:3000/movimientos/indicadores');
+        const data = await fetchConToken(`${API_URL}/movimientos/indicadores`);
 
 
         document.getElementById('promedioDiario').textContent =
@@ -1372,7 +1373,7 @@ if (btnGuardarMeta) {
         }
 
         try {
-            const data = await fetchConToken('http://localhost:3000/meta', {
+            const data = await fetchConToken(`${API_URL}/meta`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ valor })
@@ -1395,7 +1396,7 @@ if (btnGuardarMeta) {
 
 async function cargarPromedioHistorico() {
     try {
-        const data = await fetchConToken('http://localhost:3000/movimientos/promedio-historico');
+        const data = await fetchConToken(`${API_URL}/movimientos/promedio-historico`);
 
         const promedioHistorico = Number(data.promedio_historico || 0);
         document.getElementById('promedioHistorico').textContent =
@@ -1427,7 +1428,7 @@ async function cargarPromedioHistorico() {
 
 
 async function cargarSucursales() {
-    const sucursales = await fetchConToken('http://localhost:3000/sucursales');
+    const sucursales = await fetchConToken(`${API_URL}/sucursales`);
 
     const contenedor = document.getElementById('tabsSucursales');
     contenedor.innerHTML = '';
@@ -1445,7 +1446,7 @@ async function cargarSucursales() {
 
 async function cargarIngresosPaginados(pagina = 1) {
     try {
-        const url = `http://localhost:3000/movimientos?page=${pagina}&categoria=ingreso`;
+        const url = `${API_URL}/movimientos?page=${pagina}&categoria=ingreso`;
 
         const data = await fetchConToken(url);
 
@@ -1501,7 +1502,7 @@ async function cargarIngresosPaginados(pagina = 1) {
 
 async function cargarGastosPaginados(pagina = 1) {
     try {
-        const url = `http://localhost:3000/movimientos?page=${pagina}&categoria=gasto`;
+        const url = `${API_URL}/movimientos?page=${pagina}&categoria=gasto`;
 
     const data = await fetchConToken(url);
 
@@ -1681,7 +1682,7 @@ lucide.createIcons();
 
 async function cargarTipos(selectedId = null) {
     try {
-        const tipos = await fetchConToken('http://localhost:3000/tipos');
+        const tipos = await fetchConToken(`${API_URL}/tipos`);
 
         const selectCrear = document.getElementById('tipo');
         const selectEditar = document.getElementById('editTipo');
@@ -1748,7 +1749,7 @@ if (btnFiltros) {
 
 
 async function cargarTiposEnFiltro() {
-    const tipos = await fetchConToken('http://localhost:3000/tipos');
+    const tipos = await fetchConToken(`${API_URL}/tipos`);
 
     const select = document.getElementById('valorFiltro');
 
@@ -1766,7 +1767,7 @@ async function cargarTiposEnFiltro() {
 
 
 async function cargarTiposEnFiltroGastos() {
-    const tipos = await fetchConToken('http://localhost:3000/tipos');
+    const tipos = await fetchConToken(`${API_URL}/tipos`);
 
     const select = document.getElementById('valorFiltroGastos');
 
@@ -1853,7 +1854,7 @@ if (btnAplicarFiltroGastos) {
     window.filtrosActivos = Object.fromEntries(params.entries());
 
     
-    let url = 'http://localhost:3000/movimientos?' + params.toString();
+    let url = `${API_URL}/movimientos?` + params.toString();
 
     if (seccionActual === 'ingresos') {
         url += '&categoria=ingreso';
@@ -1987,7 +1988,7 @@ async function aplicarFiltroConPagina(page) {
     const params = new URLSearchParams(window.filtrosActivos || {});
     params.set('page', page);
 
-    let url = 'http://localhost:3000/movimientos?' + params.toString();
+    let url = `${API_URL}/movimientos?` + params.toString();
 
     if (seccionActual === 'ingresos') {
         url += '&categoria=ingreso';
@@ -2030,7 +2031,7 @@ async function aplicarFiltroConPagina(page) {
 
 async function cargarTiposPorCategoria(categoria, selectId) {
     try {
-        const tipos = await fetchConToken('http://localhost:3000/tipos');
+        const tipos = await fetchConToken(`${API_URL}/tipos`);
 
         const select = document.getElementById(selectId);
 
@@ -2052,7 +2053,7 @@ async function cargarTiposPorCategoria(categoria, selectId) {
 
 
 async function cargarIndicadoresGastos() {
-    const data = await fetchConToken('http://localhost:3000/movimientos/indicadores-gastos');
+    const data = await fetchConToken(`${API_URL}/movimientos/indicadores-gastos`);
 
     const promEl = document.getElementById('promedioGasto');
     if (promEl) {
@@ -2069,7 +2070,7 @@ async function cargarIndicadoresGastos() {
 }
 
 async function llenarTipos(select) {
-    const tipos = await fetchConToken('http://localhost:3000/tipos');
+    const tipos = await fetchConToken(`${API_URL}/tipos`);
 
     select.innerHTML = '<option value="">Seleccione un tipo</option>';
 
@@ -2087,7 +2088,7 @@ let graficaDona = null;
 
 async function cargarGraficaDonaIngresos() {
 
-    let url = 'http://localhost:3000/movimientos/por-tipo?categoria=ingreso';
+    let url = `${API_URL}/movimientos/por-tipo?categoria=ingreso`;
 
     const data = await fetchConToken(url);
 
@@ -2152,7 +2153,7 @@ let graficaDonaGastos = null;
 
 async function cargarGraficaDonaGastos() {
 
-    let url = 'http://localhost:3000/movimientos/por-tipo?categoria=gasto';
+    let url = `${API_URL}/movimientos/por-tipo?categoria=gasto`;
 
     const data = await fetchConToken(url);
 
@@ -2204,7 +2205,7 @@ async function cargarGraficaDonaGastos() {
 }
 
 async function cargarSumaTotal(filtros = null) {
-    let url = 'http://localhost:3000/movimientos/suma?categoria=ingreso';
+    let url = `${API_URL}/movimientos/suma?categoria=ingreso`;
 
     if (filtros) {
         url += '&' + new URLSearchParams(filtros).toString();
@@ -2217,7 +2218,7 @@ async function cargarSumaTotal(filtros = null) {
 }
 
 async function cargarSumaTotalGastos(filtros = null) {
-    let url = 'http://localhost:3000/movimientos/suma?categoria=gasto';
+    let url = `${API_URL}/movimientos/suma?categoria=gasto`;
 
     if (filtros) {
         url += '&' + new URLSearchParams(filtros).toString();
@@ -2251,7 +2252,7 @@ function abrirEditorGasto(id, fecha, monto, descripcion, tipo) {
 
 async function cargarEliminadosPaginados(categoria, pagina = 1) {
 
-    const url = `http://localhost:3000/movimientos/eliminados?categoria=${categoria}&page=${pagina}`;
+    const url = `${API_URL}/movimientos/eliminados?categoria=${categoria}&page=${pagina}`;
 
     const data = await fetchConToken(url);
 
@@ -2381,7 +2382,7 @@ function confirmarRestaurar(id) {
 }
 
 async function restaurarMovimiento(id) {
-    const data = await fetchConToken(`http://localhost:3000/movimientos/restaurar/${id}`, {
+    const data = await fetchConToken(`${API_URL}/movimientos/restaurar/${id}`, {
         method: 'PUT'
     });
 
@@ -2449,7 +2450,7 @@ async function cambiarPaginaEliminados(categoria, direccion) {
         params.set('eliminado', true);
 
         const data = await fetchConToken(
-            'http://localhost:3000/movimientos/eliminados?' + params.toString()
+            `${API_URL}/movimientos/eliminados?` + params.toString()
         );
         
         const totalPaginasReal = Math.ceil((data.total || 0) / 10) || 1;
@@ -2579,7 +2580,7 @@ async function aplicarFiltroEliminados(categoria) {
     const filtrosLimpios = Object.fromEntries(params.entries());
     delete filtrosLimpios.page;
 
-    const url = 'http://localhost:3000/movimientos/eliminados?' + new URLSearchParams({
+    const url = `${API_URL}/movimientos/eliminados?` + new URLSearchParams({
         ...filtrosLimpios,
         page: 1,
         categoria,
@@ -2754,7 +2755,7 @@ if (tipoFiltroEliminadosGastos) {
 }
 
 async function cargarTiposEnFiltroEliminados(selectId, categoria) {
-    const tipos = await fetchConToken('http://localhost:3000/tipos');
+    const tipos = await fetchConToken(`${API_URL}/tipos`);
 
     const select = document.getElementById(selectId);
 
@@ -2917,7 +2918,7 @@ async function register() {
     const email = document.getElementById('emailReg').value;
     const password = document.getElementById('passwordReg').value;
 
-    const res = await fetch('http://localhost:3000/auth/register', {
+    const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -2974,7 +2975,7 @@ if (btnLogin) {
     const password = document.querySelector('#password').value;
 
     try {
-        const res = await fetch('http://localhost:3000/auth/login', {
+        const res = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -3172,7 +3173,7 @@ function togglePassword(inputId, iconContainer) {
 
 async function cargarMeta() {
     try {
-        const data = await fetchConToken('http://localhost:3000/meta');
+        const data = await fetchConToken(`${API_URL}/meta`);
 
         metaMensual = data?.valor || 0;
 
@@ -3192,7 +3193,7 @@ async function cargarMeta() {
 
 async function enviarReporte() {
 
-    const res = await fetch('http://localhost:3000/reporte', {
+    const res = await fetch(`${API_URL}/reporte`, {
         headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token')
         }
@@ -3204,7 +3205,7 @@ async function enviarReporte() {
 }
 
 async function cargarTiposEnFiltroReporte() {
-    const tipos = await fetchConToken('http://localhost:3000/tipos');
+    const tipos = await fetchConToken(`${API_URL}/tipos`);
 
     const select = document.getElementById('valorReporte');
 
