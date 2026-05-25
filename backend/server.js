@@ -1326,6 +1326,8 @@ async function enviarReporteCorreo(email, bufferPDF) {
         }
     });
 
+    await transporter.verify()
+    console.log("✅ SMTP listo");
 
     await transporter.sendMail({
         from: '"MicroGEST" <no-reply@microgest.com>',
