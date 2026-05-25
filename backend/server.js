@@ -1,3 +1,4 @@
+const { Resend } = require('resend');
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -5,10 +6,9 @@ const db = require('./db');
 const app = express();
 const PORT = 3000;
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 
 // Middleware para leer JSON
@@ -1278,73 +1278,53 @@ function verificarToken(req, res, next) {
 async function enviarCorreoConfirmacion(email, token) {
     try {
 
-        // ✅ DEBUG CRÍTICO
-        console.log("EMAIL_USER:", process.env.EMAIL_USER);
-        console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
-        console.log("Intentando enviar correo a:", email);
-
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-
         const link = `https://microgest-production.up.railway.app/auth/confirmar/${token}`;
 
-        const info = await transporter.sendMail({
-            from: `"MicroGEST" <${process.env.EMAIL_USER}>`,
+        const data = await resend.emails.send({
+            from: 'onboarding@resend.dev', // ✅ dominio temporal de Resend
             to: email,
             subject: 'Confirma tu cuenta',
             html: `
                 <h2>Bienvenido a MicroGEST</h2>
                 <p>Haz click para activar tu cuenta:</p>
-                <a href="${link}">Confirmar cuenta</a>
+                <a href="${link}" style="padding:10px 20px;background:#3b82f6;color:white;border-radius:8px;text-decoration:none;">
+                    Confirmar cuenta
+                </a>
             `
         });
 
-        console.log("✅ Correo enviado:", info.response);
+        console.log("✅ Correo enviado con Resend:", data);
 
     } catch (error) {
-        console.error("❌ ERROR REAL EMAIL:", error);
+        console.error("❌ ERROR RESEND:", error);
     }
 }
 
-
 async function enviarReporteCorreo(email, bufferPDF) {
+    try {
 
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
+        const data = await resend.emails.send({
+            from: 'onboarding@resend.dev',
+            to: email,
+            subject: 'Tu extracto MicroGEST',
+            html: `
+                <h2>Tu extracto está listo 📊</h2>
+                <p>Adjunto encontrarás tu reporte financiero.</p>
+            `,
+            attachments: [
+                {
+                    filename: 'reporte.pdf',
+                    content: bufferPDF.toString('base64'),
+                    encoding: 'base64'
+                }
+            ]
+        });
 
-    await transporter.verify()
-    console.log("✅ SMTP listo");
+        console.log("✅ PDF enviado con Resend:", data);
 
-    await transporter.sendMail({
-        from: '"MicroGEST" <no-reply@microgest.com>',
-        to: email,
-        subject: 'Tu extracto MicroGEST',
-        html: `
-            <h2>Tu extracto está listo 📊</h2>
-            <p>Adjunto encontrarás tu reporte financiero generado desde MicroGEST.</p>
-            <p>Gracias por usar nuestra plataforma.</p>
-        `,
-        attachments: [
-            {
-                filename: 'reporte.pdf',
-                content: bufferPDF
-            }
-        ]
-    });
+    } catch (error) {
+        console.error("❌ ERROR RESEND PDF:", error);
+    }
 }
 
 function limpiarPendientesExpirados() {
