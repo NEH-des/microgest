@@ -1,4 +1,4 @@
-const { Resend } = require('resend');
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -7,8 +7,9 @@ const app = express();
 const PORT = 3000;
 const crypto = require('crypto');
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const resend = new Resend(process.env.RESEND_API_KEY);
+const client = SibApiV3Sdk.ApiClient.instance;
+client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+
 
 
 // Middleware para leer JSON
@@ -1276,54 +1277,66 @@ function verificarToken(req, res, next) {
 }
 
 async function enviarCorreoConfirmacion(email, token) {
+
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+    const link = `https://microgest-production.up.railway.app/auth/confirmar/${token}`;
+
+    const sendSmtpEmail = {
+        sender: {
+            email: "avisosmicrogest@gmail.com",
+            name: "MicroGEST"
+        },
+        to: [
+            { email }
+        ],
+        subject: "Confirma tu cuenta",
+        htmlContent: `
+            <h2>Bienvenido a MicroGEST</h2>
+            <p>Haz click para activar tu cuenta:</p>
+            <a href="${link}">Confirmar cuenta</a>
+        `
+    };
+
     try {
-
-        const link = `https://microgest-production.up.railway.app/auth/confirmar/${token}`;
-
-        const data = await resend.emails.send({
-            from: 'onboarding@resend.dev', // ✅ dominio temporal de Resend
-            to: email,
-            subject: 'Confirma tu cuenta',
-            html: `
-                <h2>Bienvenido a MicroGEST</h2>
-                <p>Haz click para activar tu cuenta:</p>
-                <a href="${link}" style="padding:10px 20px;background:#3b82f6;color:white;border-radius:8px;text-decoration:none;">
-                    Confirmar cuenta
-                </a>
-            `
-        });
-
-        console.log("✅ Correo enviado con Resend:", data);
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log("✅ Correo enviado con Brevo");
 
     } catch (error) {
-        console.error("❌ ERROR RESEND:", error);
+        console.error("❌ Error Brevo:", error);
     }
 }
-
 async function enviarReporteCorreo(email, bufferPDF) {
+
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+    const sendSmtpEmail = {
+        sender: {
+            email: "avisosmicrogest@gmail.com",
+            name: "MicroGEST"
+        },
+        to: [
+            { email }
+        ],
+        subject: "Tu extracto MicroGEST",
+        htmlContent: `
+            <h2>Tu extracto está listo 📊</h2>
+            <p>Adjunto encontrarás tu reporte financiero.</p>
+        `,
+        attachment: [
+            {
+                content: bufferPDF.toString('base64'),
+                name: 'reporte.pdf'
+            }
+        ]
+    };
+
     try {
-
-        const data = await resend.emails.send({
-            from: 'onboarding@resend.dev',
-            to: email,
-            subject: 'Tu extracto MicroGEST',
-            html: `
-                <h2>Tu extracto está listo 📊</h2>
-                <p>Adjunto encontrarás tu reporte financiero.</p>
-            `,
-            attachments: [
-                {
-                    filename: 'reporte.pdf',
-                    content: bufferPDF.toString('base64'),
-                    encoding: 'base64'
-                }
-            ]
-        });
-
-        console.log("✅ PDF enviado con Resend:", data);
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log("✅ PDF enviado con Brevo");
 
     } catch (error) {
-        console.error("❌ ERROR RESEND PDF:", error);
+        console.error("❌ Error Brevo PDF:", error);
     }
 }
 
