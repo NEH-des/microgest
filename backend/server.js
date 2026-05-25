@@ -896,12 +896,13 @@ app.post('/auth/register', async (req, res) => {
                             "UPDATE usuarios_pendientes SET token=?, creado_en=NOW() WHERE email=?",
                             [nuevoToken, email],
                             async () => {
-
-                                await enviarCorreoConfirmacion(email, nuevoToken);
-
-                                return res.json({
+                                res.json({
                                     message: "Revisa tu correo para confirmar tu cuenta (mensaje reenviado)"
                                 });
+
+                                enviarCorreoConfirmacion(email, nuevoToken)
+                                    .catch(err => console.error("Error email:", err));
+
                             }
                         );
 
@@ -924,11 +925,15 @@ app.post('/auth/register', async (req, res) => {
                                     });
                                 }
 
-                                await enviarCorreoConfirmacion(email, token);
-
                                 res.json({
                                     message: "Revisa tu correo para confirmar tu cuenta"
                                 });
+
+                                enviarCorreoConfirmacion(email, token)
+                                    .catch(err => console.error("Error email:", err));
+
+
+
                             }
                         );
 
@@ -1056,11 +1061,11 @@ app.get('/auth/confirmar/:token', (req, res) => {
 
         <script>
         function irLogin() {
-            window.location.href = "http://localhost:5500/index.html";
+            window.location.href = "https://neh-des.github.io/microgest/";
         }
 
         function irRegistro() {
-            window.location.href = "http://localhost:5500/index.html";
+            window.location.href = "https://neh-des.github.io/microgest/";
         }
         </script>
 
@@ -1160,12 +1165,12 @@ app.get('/auth/confirmar/:token', (req, res) => {
 
                 <script>
                 function irAlLogin() {
-                    window.location.href = "http://localhost:5500/index.html";
+                    window.location.href = "https://neh-des.github.io/microgest/";
                 }
 
                 /* ✅ opcional: redirección automática en 3 segundos */
                 setTimeout(() => {
-                    window.location.href = "http://localhost:5500/index.html";
+                    window.location.href = "https://neh-des.github.io/microgest/";
                 }, 3000);
                 </script>
 
@@ -1280,7 +1285,7 @@ async function enviarCorreoConfirmacion(email, token) {
         }
     });
 
-    const link = `http://localhost:3000/auth/confirmar/${token}`;
+    const link = `https://microgest-production.up.railway.app/auth/confirmar/${token}`;
 
     await transporter.sendMail({
         from: '"MicroGEST" <no-reply@microgest.com>',
@@ -1424,6 +1429,7 @@ app.get('/reporte', verificarToken, (req, res) => {
 
         doc.on('data', buffers.push.bind(buffers));
 
+
         doc.on('end', async () => {
             const pdfData = Buffer.concat(buffers);
 
@@ -1433,23 +1439,17 @@ app.get('/reporte', verificarToken, (req, res) => {
                 return res.status(404).json({ message: 'Usuario no encontrado' });
             }
 
-            try {
-                await enviarReporteCorreo(emailUsuario, pdfData);
+            // ✅ RESPONDER PRIMERO
+            res.json({
+                success: true,
+                message: 'Reporte enviado'
+            });
 
-                res.json({
-                    success: true,
-                    message: 'Reporte enviado al correo',
-                    email: emailUsuario
-                });
-
-            } catch (error) {
-                console.error(error);
-                res.status(500).json({
-                    success: false,
-                    message: 'Error enviando el reporte'
-                });
-            }
+            // ✅ ENVIAR DESPUÉS (NO BLOQUEA)
+            enviarReporteCorreo(emailUsuario, pdfData)
+                .catch(error => console.error("Error email:", error));
         });
+
 
 
         doc.fontSize(18).fillColor('#111827').text('MicroGEST - Extracto', { align: 'center' });
