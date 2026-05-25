@@ -1278,12 +1278,15 @@ function verificarToken(req, res, next) {
 async function enviarCorreoConfirmacion(email, token) {
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         }
     });
+
 
     const link = `https://microgest-production.up.railway.app/auth/confirmar/${token}`;
 
@@ -1304,12 +1307,15 @@ async function enviarCorreoConfirmacion(email, token) {
 async function enviarReporteCorreo(email, bufferPDF) {
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         }
     });
+
 
     await transporter.sendMail({
         from: '"MicroGEST" <no-reply@microgest.com>',
