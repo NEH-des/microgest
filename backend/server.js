@@ -1276,33 +1276,37 @@ function verificarToken(req, res, next) {
 }
 
 async function enviarCorreoConfirmacion(email, token) {
+    try {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
 
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
+        const link = `https://microgest-production.up.railway.app/auth/confirmar/${token}`;
 
+        const info = await transporter.sendMail({
+            from: `"MicroGEST" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Confirma tu cuenta',
+            html: `
+                <h2>Bienvenido a MicroGEST</h2>
+                <p>Haz click para activar tu cuenta:</p>
+                <a href="${link}">Confirmar cuenta</a>
+            `
+        });
 
-    const link = `https://microgest-production.up.railway.app/auth/confirmar/${token}`;
+        console.log("✅ Correo enviado:", info.response);
 
-    await transporter.sendMail({
-        from: '"MicroGEST" <no-reply@microgest.com>',
-        to: email,
-        subject: 'Confirma tu cuenta',
-        html: `
-            <h2>Bienvenido a MicroGEST</h2>
-            <p>Para activar tu cuenta, haz click en el siguiente botón:</p>
-            <a href="${link}" style="padding:10px 20px;background:#3b82f6;color:white;border-radius:8px;text-decoration:none;">
-                Confirmar cuenta
-            </a>
-        `
-    });
+    } catch (error) {
+        console.error("❌ ERROR REAL EMAIL:", error);
+    }
 }
+
 
 async function enviarReporteCorreo(email, bufferPDF) {
 
