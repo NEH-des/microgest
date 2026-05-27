@@ -1651,6 +1651,14 @@ function mostrarSeccion(id) {
 
 
     if (id === 'dashboard') {
+        
+        if (grafica) {
+                grafica.destroy();
+                grafica = null;
+            }
+
+        rangoGrafica = "1m";
+
         cargarMeta();
         cargarResumen();
         cargarGrafica();
@@ -3253,13 +3261,13 @@ document.addEventListener('click', (e) => {
 });
 
 
-function cambiarRango(rango) {
+function cambiarRango(rango, btn) {
     rangoGrafica = rango;
 
     document.querySelectorAll('.filtros-grafica button')
-        .forEach(btn => btn.classList.remove('activo'));
+        .forEach(b => b.classList.remove('activo'));
 
-    event.target.classList.add('activo');
+    btn.classList.add('activo');
 
     cargarGrafica();
 }

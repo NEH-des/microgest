@@ -240,17 +240,25 @@
                 <small id="comparacionHistorica"></small>
             </div>
 
-            <!-- ===== ANÁLISIS DE INGRESOS (GRÁFICAS INTEGRADAS) ===== -->
+            <!-- ===== ANÁLISIS DE MOVIMIENTOS (GRÁFICAS INTEGRADAS) ===== -->
             <section class="dashboard-graficas">
-                <h2 class="titulo-seccion">Análisis de ingresos</h2>
-                <div class="filtros-grafica">
-                    <button onclick="cambiarRango('3m')">Last 3 months</button>
-                    <button onclick="cambiarRango('1m')">Last 30 days</button>
-                    <button onclick="cambiarRango('7d')">Last 7 days</button>
+
+                <div class="dashboard-graficas-header">
+
+                    <h2 class="titulo-seccion">Análisis de ingresos</h2>
+
+                    <div class="filtros-grafica">
+                        <button onclick="cambiarRango('3m', this)">Last 3 months</button>
+                        <button onclick="cambiarRango('1m', this)" class="activo">Last 30 days</button>
+                        <button onclick="cambiarRango('7d', this)">Last 7 days</button>
+                    </div>
+
                 </div>
+
                 <div class="chart-container">
                     <div id="graficaIngresos"></div>
                 </div>
+
             </section>
         </section>
 

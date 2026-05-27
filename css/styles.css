@@ -414,8 +414,8 @@ tr:hover {
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
 
-    overflow: hidden;      /* ✅ nada se sale */
-    position: relative;    /* ✅ clave para ApexCharts */
+    overflow: hidden;
+    position: relative;  
 }
 
 
@@ -578,6 +578,30 @@ tr:hover {
     padding-top: var(--spacing-2xl);
     border-top: 2px solid var(--border-color);
 }
+
+.dashboard-graficas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* botones lado derecho */
+.filtros-grafica {
+    display: flex;
+    gap: 8px;
+}
+
+.filtros-grafica button {
+    background: #e5e7eb;
+    border-radius: 10px;
+    padding: 6px 12px;
+}
+
+.filtros-grafica button.activo {
+    background: #3b82f6;
+    color: white;
+}
+
 
 
 .btn-grafica {
@@ -978,15 +1002,16 @@ select {
 }
 
 
+
 .titulo-seccion {
     background: linear-gradient(135deg, #3b82f6, #60a5fa);
     color: white;
     padding: 12px 20px;
     border-radius: 12px;
 
-    display: inline-flex;       /* ✅ clave */
-    align-items: center;        /* ✅ centra vertical */
-    gap: 8px;                   /* ✅ espacio icono-texto */
+    display: inline-flex;       
+    align-items: center;      
+    gap: 8px;     
 
     margin: 20px 0;
     font-weight: 600;
