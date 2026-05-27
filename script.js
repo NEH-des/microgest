@@ -272,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             window.filtrosActivos = Object.fromEntries(params.entries());
+            delete window.filtrosActivos.page;
 
             let url = `${API_URL}/movimientos?` + params.toString();
             url += '&categoria=ingreso';
@@ -288,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             actualizarPaginacion();
             cargarSumaTotal(window.filtrosActivos);
+            cargarGraficaDonaIngresos();
         });
     }
 
@@ -1861,6 +1863,7 @@ if (btnAplicarFiltroGastos) {
     }
 
     window.filtrosActivos = Object.fromEntries(params.entries());
+    delete window.filtrosActivos.page;
 
     
     let url = `${API_URL}/movimientos?` + params.toString();
@@ -2014,10 +2017,14 @@ async function aplicarFiltroConPagina(page) {
     totalPaginas = data.totalPaginas;
 
     
-    
     if (seccionActual === 'ingresos') {
+        pintarTabla(data.datos); // 🔥 ESTA LÍNEA FALTABA
+
         document.getElementById('contadorIngresos').textContent =
             `${data.total ?? data.datos?.length ?? 0} ingresos`;
+
+        cargarSumaTotal(window.filtrosActivos);
+        cargarGraficaDonaIngresos(); // opcional pero recomendado
     }
 
 
