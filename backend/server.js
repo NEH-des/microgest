@@ -261,13 +261,6 @@ app.get('/movimientos', verificarToken, (req, res) => {
 
     let params = [usuarioId];
 
-    const hayFiltroFecha =
-    fecha || mes || anio || (req.query.fechaInicio && req.query.fechaFin);
-
-    if (!hayFiltroFecha) {
-        sql += ` AND m.fecha >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)`;
-    }
-
     // CATEGORÍA
     if (categoria) {
         sql += ` AND m.categoria = ?`;
@@ -668,15 +661,13 @@ app.get('/movimientos/promedio-historico', verificarToken, (req, res) => {
 app.get('/movimientos/por-tipo', verificarToken, (req, res) => {
     const { categoria } = req.query;
 
-    let sql = `
+    const sql = `
         SELECT t.nombre AS tipo, SUM(m.monto) AS total
         FROM movimientos m
         JOIN tipos t ON m.tipo_id = t.id
-        WHERE m.usuario_id = ? 
-        AND m.categoria = ? 
-        AND m.eliminado = FALSE
-        AND m.fecha >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        WHERE m.usuario_id = ? AND m.categoria = ? AND m.eliminado = FALSE 
         GROUP BY t.nombre
+
     `;
 
     db.query(sql, [req.usuario.id, categoria], (err, result) => {
@@ -696,13 +687,6 @@ app.get('/movimientos/suma', verificarToken, (req, res) => {
 
     let sql = `SELECT SUM(m.monto) AS total FROM movimientos m WHERE m.usuario_id = ? AND m.categoria = ? AND m.eliminado = FALSE`;
     let params = [req.usuario.id, categoria];
-
-    const hayFiltroFecha =
-    fecha || mes || anio || (req.query.fechaInicio && req.query.fechaFin);
-
-    if (!hayFiltroFecha) {
-        sql += " AND m.fecha >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
-    }
 
     if (tipo) {
         sql += " AND m.tipo_id = ?";
