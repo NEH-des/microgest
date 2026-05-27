@@ -401,27 +401,48 @@ app.get('/movimientos/resumen', verificarToken, (req, res) => {
 
 
 //graficas dobles
+
 app.get('/movimientos/por-dia', verificarToken, (req, res) => {
+
+    const { rango } = req.query;
+
+    let condicionFecha = "";
+
+    if (rango === "7d") {
+        condicionFecha = "AND m.fecha >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+    }
+
+    else if (rango === "1m") {
+        condicionFecha = "AND m.fecha >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
+    }
+
+    else if (rango === "3m") {
+        condicionFecha = "AND m.fecha >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)";
+    }
 
     const sql = `
         SELECT
-            fecha,
+            DATE(m.fecha) as fecha,
             COALESCE(SUM(CASE WHEN categoria='ingreso' THEN monto END),0) AS ingresos,
             COALESCE(SUM(CASE WHEN categoria='gasto' THEN monto END),0) AS gastos
-        FROM movimientos m WHERE m.usuario_id = ? AND m.eliminado = FALSE
-        GROUP BY fecha
+        FROM movimientos m
+        WHERE m.usuario_id = ?
+        AND m.eliminado = FALSE
+        ${condicionFecha}
+        GROUP BY DATE(m.fecha)
         ORDER BY fecha;
-
     `;
 
     db.query(sql, [req.usuario.id], (err, datos) => {
         if (err) {
-            console.error('Error en consulta de movimientos por día:', err);
+            console.error(err);
             return res.status(500).json({ error: 'Error en consulta' });
         }
+
         res.json(datos);
     });
 });
+
 
 //delete
 app.delete('/movimientos/:id', verificarToken, (req, res) => {

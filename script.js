@@ -1,5 +1,6 @@
 const API_URL = "https://microgest-production.up.railway.app";
 let ingresoEditandoId = null;
+let rangoGrafica = "1m";
 let sucursalActual = 1;
 let modoFiltro = false;
 let paginaActual = 1;
@@ -1196,7 +1197,7 @@ async function cargarGrafica() {
 
     if (seccionActual === 'especifico') return;
 
-    const url = `${API_URL}/movimientos/por-dia`;
+    const url = `${API_URL}/movimientos/por-dia?rango=${rangoGrafica}`;
 
     try {
         const data = await fetchConToken(url);
@@ -3250,3 +3251,15 @@ document.addEventListener('click', (e) => {
     // 🔥 TODO LO DEMÁS → CERRAR
     cerrarModalReporte();
 });
+
+
+function cambiarRango(rango) {
+    rangoGrafica = rango;
+
+    document.querySelectorAll('.filtros-grafica button')
+        .forEach(btn => btn.classList.remove('activo'));
+
+    event.target.classList.add('activo');
+
+    cargarGrafica();
+}

@@ -243,6 +243,11 @@
             <!-- ===== ANÁLISIS DE INGRESOS (GRÁFICAS INTEGRADAS) ===== -->
             <section class="dashboard-graficas">
                 <h2 class="titulo-seccion">Análisis de ingresos</h2>
+                <div class="filtros-grafica">
+                    <button onclick="cambiarRango('3m')">Last 3 months</button>
+                    <button onclick="cambiarRango('1m')">Last 30 days</button>
+                    <button onclick="cambiarRango('7d')">Last 7 days</button>
+                </div>
                 <div class="chart-container">
                     <div id="graficaIngresos"></div>
                 </div>
