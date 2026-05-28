@@ -22,6 +22,7 @@ let modoVista = "mes";
 document.addEventListener('DOMContentLoaded', () => {
 
     console.log("La página de gestión de ingresos está funcionando");
+    console.log("TOKEN:", localStorage.getItem("token"));
 
     seccionActual = 'dashboard';
 
