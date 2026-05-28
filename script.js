@@ -118,10 +118,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
     async function validarSesion() {
         const token = localStorage.getItem('token');
-        return !!token;
+
+        if (!token) return false;
+
+        try {
+            await fetch(`${API_URL}/tipos`, {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            });
+
+            return true;
+        } catch {
+            return false;
+        }
     }
+
 
         
     const modal = document.getElementById("modal");
@@ -3013,8 +3028,14 @@ async function fetchConToken(url, options = {}) {
     });
 
     if (res.status === 401) {
+
         localStorage.removeItem('token');
-        window.location.href = 'index.html';
+
+        // ✅ SOLO redirigir si NO estás en login
+        if (!window.location.pathname.includes("index.html")) {
+            window.location.href = 'index.html';
+        }
+
         return;
     }
 
@@ -3023,18 +3044,14 @@ async function fetchConToken(url, options = {}) {
         throw new Error(errorText || 'Error en la petición');
     }
 
-
-
     const text = await res.text();
+
     try {
         return JSON.parse(text);
     } catch {
         throw new Error("Respuesta inválida del servidor");
     }
-
 }
-
-
 
 
 const btnLogin = document.querySelector('#btnLogin');
