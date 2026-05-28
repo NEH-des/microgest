@@ -126,11 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!token) return false;
 
         try {
-            await fetch(`${API_URL}/tipos`, {
+            const res = await fetch(`${API_URL}/tipos`, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
             });
+
+            if (!res.ok) return false;
 
             return true;
         } catch {
@@ -244,6 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btnAplicarFiltro.addEventListener('click', async () => {
 
             modoFiltro = true;
+
+            
+            document.getElementById('btnFiltros')?.classList.add('activo');
+            document.getElementById('btnFiltrosGastos')?.classList.add('activo');
+
 
             const tipoFiltro = document.getElementById('tipoFiltro').value;
             const valor = document.getElementById('valorFiltro')?.value;
@@ -487,6 +494,9 @@ document.addEventListener('DOMContentLoaded', () => {
             panel.style.display = 'none';
 
             modoFiltro = false;
+            document.getElementById('btnFiltros')?.classList.remove('activo');
+            document.getElementById('btnFiltrosGastos')?.classList.remove('activo');
+
             window.filtrosActivos = null;
 
             paginaActual = 1;
@@ -657,7 +667,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })};
 
-    document.getElementById('formEditarGasto').addEventListener('submit', async (e) => {
+    
+    const formEditarGasto = document.getElementById('formEditarGasto');
+
+    if (formEditarGasto) {
+        formEditarGasto.addEventListener('submit', async (e) => {
+
         e.preventDefault();
 
         if (!gastoEditandoId) return;
@@ -694,7 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             mostrarModal("error", "Error", "Error al editar gasto");
         }
-    });
+    })};
     // ===============================
     // CANCELAR EDICIÓN
     // ===============================
@@ -706,10 +721,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('btnCancelarGasto').addEventListener('click', () => {
-        document.getElementById('panelEditarGasto').classList.add('oculto');
-        gastoEditandoId = null;
-    });
+    const btnCancelarGasto = document.getElementById('btnCancelarGasto');
+
+    if (btnCancelarGasto) {
+        btnCancelarGasto.addEventListener('click', () => {
+            document.getElementById('panelEditarGasto').classList.add('oculto');
+            gastoEditandoId = null;
+        })};
 
     // ===============================
     // MODAL REPORTE
@@ -1789,6 +1807,9 @@ if (btnFiltros) {
     const panel = document.getElementById('panelFiltros');
 
     if (panel.style.display === 'block') {
+        document.getElementById('btnFiltros')?.classList.remove('activo');
+        document.getElementById('btnFiltrosGastos')?.classList.remove('activo');
+
 
         // cerrar filtros
         panel.style.display = 'none';
@@ -1855,6 +1876,8 @@ if (btnAplicarFiltroGastos) {
     btnAplicarFiltroGastos.addEventListener('click', async () => {
 
     modoFiltro = true;
+    document.getElementById('btnFiltros')?.classList.remove('activo'); // opcional
+    document.getElementById('btnFiltrosGastos')?.classList.add('activo');
 
     const tipoFiltro = document.getElementById('tipoFiltroGastos').value;
     const valor = document.getElementById('valorFiltroGastos')?.value;
@@ -2020,6 +2043,9 @@ if (btn) {
 
     // limpiar estado
     modoFiltro = false;
+    document.getElementById('btnFiltros')?.classList.remove('activo');
+    document.getElementById('btnFiltrosGastos')?.classList.remove('activo');
+
     window.filtrosActivos = null;
 
     // IMPORTANTE: recargar tabla
@@ -2036,17 +2062,23 @@ if (btn) {
 
 })};
 
-document.getElementById('btnLimpiarFiltroGastos').addEventListener('click', () => {
+const btnLimpiarFiltroGastos = document.getElementById('btnLimpiarFiltroGastos');
+
+if (btnLimpiarFiltroGastos) {
+    btnLimpiarFiltroGastos.addEventListener('click', () => {
 
     document.getElementById('tipoFiltroGastos').value = '';
     document.getElementById('inputFiltroGastos').innerHTML = '';
 
     modoFiltro = false;
+    document.getElementById('btnFiltros')?.classList.remove('activo');
+    document.getElementById('btnFiltrosGastos')?.classList.remove('activo');
+
     window.filtrosActivos = null;
 
     cargarGastosPaginados(1);
     cargarSumaTotalGastos();
-});
+})};
 
 
 async function aplicarFiltroConPagina(page) {
@@ -3033,7 +3065,7 @@ async function fetchConToken(url, options = {}) {
         localStorage.removeItem('token');
 
         // ✅ SOLO redirigir si NO estás en login
-        if (!window.location.pathname.includes("index.html")) {
+        if (!location.href.includes("index.html")) {
             window.location.href = 'index.html';
         }
 
@@ -3368,6 +3400,9 @@ document.querySelectorAll('.btnMesActual').forEach(btn => {
         paginaActual = 1;
 
         modoFiltro = false;
+        document.getElementById('btnFiltros')?.classList.remove('activo');
+        document.getElementById('btnFiltrosGastos')?.classList.remove('activo');
+
         window.filtrosActivos = null;
 
         limpiarFiltrosUI();
@@ -3395,6 +3430,9 @@ document.querySelectorAll('.btnTodos').forEach(btn => {
         paginaActual = 1;
 
         modoFiltro = false;
+        document.getElementById('btnFiltros')?.classList.remove('activo');
+        document.getElementById('btnFiltrosGastos')?.classList.remove('activo');
+
         window.filtrosActivos = null;
 
         limpiarFiltrosUI();
@@ -3448,4 +3486,9 @@ function actualizarBotonesVista() {
             btn.classList.add('activo');
         });
     }
+
+    
+    document.getElementById('btnFiltros')?.classList.remove('activo');
+    document.getElementById('btnFiltrosGastos')?.classList.remove('activo');
+
 }

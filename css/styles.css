@@ -1801,3 +1801,29 @@ button:disabled {
     color: white;
     border: 1px solid #3b82f6;
 }
+
+/* BOTÓN FILTROS NORMAL */
+#btnFiltros,
+#btnFiltrosGastos {
+    background: #e5e7eb;
+    color: #111827;
+    border: 1px solid #d1d5db;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* HOVER */
+#btnFiltros:hover,
+#btnFiltrosGastos:hover {
+    background: #d1d5db;
+}
+
+/* ✅ FILTRO ACTIVO (VERDE) */
+#btnFiltros.activo,
+#btnFiltrosGastos.activo {
+    background: #22c55e; /* verde */
+    color: white;
+    border: 1px solid #22c55e;
+}
