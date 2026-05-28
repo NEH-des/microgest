@@ -1657,15 +1657,33 @@ function mostrarSeccion(id) {
     document.getElementById(id).classList.remove('oculto');
 
     if (id === 'ingresos') {
+
+        // 🔥 FORZAR ESTADO INICIAL
+        modoVista = "mes";
+        modoFiltro = false;
+        window.filtrosActivos = null;
+
         paginaActual = 1;
+
         configurarPaginacion();
-        cargarIngresosPaginados();
+        cargarIngresosPaginados(1);
+        cargarGraficaDonaIngresos();
+
+        // ✅ sincronizar UI
+        actualizarBotonesVista();
     }
 
     if (id === 'gastos') {
+
+        modoVista = "mes";
+        modoFiltro = false;
+        window.filtrosActivos = null;
+
         paginaActual = 1;
         configurarPaginacion();
         cargarGastosPaginados();
+        actualizarBotonesVista();
+        cargarGraficaDonaGastos();
     }
 
 
@@ -3325,51 +3343,91 @@ function obtenerMesActual() {
     return `${year}-${mes}`;
 }
 
-document.getElementById('btnMesActual').addEventListener('click', () => {
-    modoVista = "mes";
-    paginaActual = 1;
+document.querySelectorAll('.btnMesActual').forEach(btn => {
+    btn.addEventListener('click', () => {
 
-    modoFiltro = false;
-    window.filtrosActivos = null;
+        modoVista = "mes";
+        paginaActual = 1;
 
+        modoFiltro = false;
+        window.filtrosActivos = null;
 
-    if (seccionActual === 'ingresos') {
-        cargarIngresosPaginados(1);
-    }
+        limpiarFiltrosUI();
 
-    if (seccionActual === 'gastos') {
-        cargarGastosPaginados(1);
-    }
+        if (seccionActual === 'ingresos') {
+            cargarIngresosPaginados(1);
+            cargarSumaTotal();
+            cargarGraficaDonaIngresos();
+        }
 
-    actualizarBotonesVista();
+        if (seccionActual === 'gastos') {
+            cargarGastosPaginados(1);
+            cargarSumaTotalGastos();
+            cargarGraficaDonaGastos();
+        }
+
+        actualizarBotonesVista();
+    });
 });
 
-document.getElementById('btnTodos').addEventListener('click', () => {
-    modoVista = "todos";
-    paginaActual = 1;
+document.querySelectorAll('.btnTodos').forEach(btn => {
+    btn.addEventListener('click', () => {
 
-    modoFiltro = false;
-    window.filtrosActivos = null;
+        modoVista = "todos";
+        paginaActual = 1;
 
-    if (seccionActual === 'ingresos') {
-        cargarIngresosPaginados(1);
-    }
+        modoFiltro = false;
+        window.filtrosActivos = null;
 
-    if (seccionActual === 'gastos') {
-        cargarGastosPaginados(1);
-    }
+        limpiarFiltrosUI();
 
-    actualizarBotonesVista();
+        if (seccionActual === 'ingresos') {
+            cargarIngresosPaginados(1);
+            cargarSumaTotal();
+            cargarGraficaDonaIngresos();
+        }
+
+        if (seccionActual === 'gastos') {
+            cargarGastosPaginados(1);
+            cargarSumaTotalGastos();
+            cargarGraficaDonaGastos();
+        }
+
+        actualizarBotonesVista();
+    });
 });
+
+
+function limpiarFiltrosUI() {
+    const tipoFiltro = document.getElementById('tipoFiltro');
+    const inputFiltro = document.getElementById('inputFiltro');
+    if (tipoFiltro) tipoFiltro.value = '';
+    if (inputFiltro) inputFiltro.innerHTML = '';
+
+    const tipoFiltroGastos = document.getElementById('tipoFiltroGastos');
+    const inputFiltroGastos = document.getElementById('inputFiltroGastos');
+    if (tipoFiltroGastos) tipoFiltroGastos.value = '';
+    if (inputFiltroGastos) inputFiltroGastos.innerHTML = '';
+}
+
 
 
 function actualizarBotonesVista() {
-    document.getElementById('btnMesActual').classList.remove('activo');
-    document.getElementById('btnTodos').classList.remove('activo');
+    document.querySelectorAll('.btnMesActual').forEach(btn => {
+        btn.classList.remove('activo');
+    });
+
+    document.querySelectorAll('.btnTodos').forEach(btn => {
+        btn.classList.remove('activo');
+    });
 
     if (modoVista === 'mes') {
-        document.getElementById('btnMesActual').classList.add('activo');
+        document.querySelectorAll('.btnMesActual').forEach(btn => {
+            btn.classList.add('activo');
+        });
     } else {
-        document.getElementById('btnTodos').classList.add('activo');
+        document.querySelectorAll('.btnTodos').forEach(btn => {
+            btn.classList.add('activo');
+        });
     }
 }

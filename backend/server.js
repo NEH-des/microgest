@@ -679,7 +679,7 @@ app.get('/movimientos/por-tipo', verificarToken, (req, res) => {
         params.push(req.query.mes);
     }
 
-    db.query(sql, [req.usuario.id, categoria], (err, result) => {
+    db.query(sql, params, [req.usuario.id, categoria], (err, result) => {
         if (err) return res.status(500).json(err);
         res.json(result);
     });
