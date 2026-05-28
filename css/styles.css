@@ -1776,3 +1776,28 @@ button:disabled {
     display: flex;
 }
 
+/* BOTONES BASE */
+.btnMesActual,
+.btnTodos {
+    background: #e5e7eb; /* gris claro */
+    color: #111827;
+    border: 1px solid #d1d5db;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* HOVER */
+.btnMesActual:hover,
+.btnTodos:hover {
+    background: #d1d5db;
+}
+
+/* ESTADO ACTIVO */
+.btnMesActual.activo,
+.btnTodos.activo {
+    background: #3b82f6; /* azul */
+    color: white;
+    border: 1px solid #3b82f6;
+}
