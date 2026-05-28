@@ -245,13 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAplicarFiltro) {
         btnAplicarFiltro.addEventListener('click', async () => {
 
-            modoFiltro = true;
-
-            
-            document.getElementById('btnFiltros')?.classList.add('activo');
-            document.getElementById('btnFiltrosGastos')?.classList.add('activo');
-
-
             const tipoFiltro = document.getElementById('tipoFiltro').value;
             const valor = document.getElementById('valorFiltro')?.value;
             const sinDesc = document.getElementById('sinDescripcion')?.checked;
@@ -272,6 +265,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 mostrarModal("error", "Error", "Selecciona un valor válido");
                 return;
             }
+
+            modoFiltro = true;
+            document.getElementById('btnFiltros')?.classList.add('activo');
+            document.getElementById('btnFiltrosGastos')?.classList.add('activo');
 
             if (tipoFiltro === 'tipo') params.append('tipo', valor);
             if (tipoFiltro === 'monto') params.append('monto', valor);
@@ -1875,10 +1872,6 @@ const btnAplicarFiltroGastos = document.getElementById('btnAplicarFiltroGastos')
 if (btnAplicarFiltroGastos) {
     btnAplicarFiltroGastos.addEventListener('click', async () => {
 
-    modoFiltro = true;
-    document.getElementById('btnFiltros')?.classList.remove('activo'); // opcional
-    document.getElementById('btnFiltrosGastos')?.classList.add('activo');
-
     const tipoFiltro = document.getElementById('tipoFiltroGastos').value;
     const valor = document.getElementById('valorFiltroGastos')?.value;
     const sinDesc = document.getElementById('sinDescripcionGastos')?.checked;
@@ -1898,6 +1891,10 @@ if (btnAplicarFiltroGastos) {
         mostrarModal("error", "Error", "Selecciona un valor válido");
         return;
     }
+
+    modoFiltro = true;
+    document.getElementById('btnFiltros')?.classList.remove('activo'); // opcional
+    document.getElementById('btnFiltrosGastos')?.classList.add('activo');
 
 
     if (tipoFiltro === 'tipo') {
