@@ -15,7 +15,10 @@ client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 // Middleware para leer JSON
 app.use(express.json());
 app.use(cors({
-  origin: ["https://neh-des.github.io"]
+  origin: [
+  "https://neh-des.github.io",
+  "http://localhost:5500"
+]
 }));
 
 
@@ -145,13 +148,20 @@ app.get('/meta', verificarToken, (req, res) => {
 app.delete('/meta', verificarToken, (req, res) => {
     const usuarioId = req.usuario.id;
 
+
     db.query(
         `DELETE FROM metas WHERE usuario_id = ?`,
         [usuarioId],
-        () => {
+        (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: 'Error al eliminar meta' });
+            }
+
             res.json({ message: 'Meta eliminada' });
         }
     );
+
 });
 
 
@@ -663,13 +673,11 @@ app.get('/movimientos/promedio-historico', verificarToken, (req, res) => {
 app.get('/movimientos/por-tipo', verificarToken, (req, res) => {
     const { categoria } = req.query;
 
-    const sql = `
+    let sql = `
         SELECT t.nombre AS tipo, SUM(m.monto) AS total
         FROM movimientos m
         JOIN tipos t ON m.tipo_id = t.id
         WHERE m.usuario_id = ? AND m.categoria = ? AND m.eliminado = FALSE 
-        GROUP BY t.nombre
-
     `;
 
     let params = [req.usuario.id, categoria];
@@ -679,7 +687,9 @@ app.get('/movimientos/por-tipo', verificarToken, (req, res) => {
         params.push(req.query.mes);
     }
 
-    db.query(sql, params, [req.usuario.id, categoria], (err, result) => {
+    sql += ` GROUP BY t.nombre`;
+
+    db.query(sql, params, (err, result) => {
         if (err) return res.status(500).json(err);
         res.json(result);
     });
@@ -815,7 +825,7 @@ app.get('/movimientos/eliminados', verificarToken, (req, res) => {
 
     db.query(sqlTotal, params, (err, totalRes) => {
 
-        const total = totalRes[0].total;
+        const total = totalRes?.[0]?.total || 0;
 
         sql += ` ORDER BY m.fecha DESC LIMIT ? OFFSET ?`;
         params.push(limit, offset);
