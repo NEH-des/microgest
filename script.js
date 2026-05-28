@@ -257,6 +257,13 @@ document.addEventListener('DOMContentLoaded', () => {
             paginaActual = 1;
             params.append('page', 1);
 
+            // 🔥 VALIDAR QUE HAYA TIPO
+            if (!tipoFiltro) {
+                mostrarModal("error", "Error", "Selecciona un filtro");
+                return;
+            }
+
+            // 🔥 VALIDAR VALOR
             if (
                 tipoFiltro !== 'descripcion' &&
                 !(tipoFiltro === 'fecha' && document.getElementById('modoFecha')?.value === 'rango') &&
@@ -266,9 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+
             modoFiltro = true;
             document.getElementById('btnFiltros')?.classList.add('activo');
-            document.getElementById('btnFiltrosGastos')?.classList.add('activo');
 
             if (tipoFiltro === 'tipo') params.append('tipo', valor);
             if (tipoFiltro === 'monto') params.append('monto', valor);
@@ -1883,17 +1890,25 @@ if (btnAplicarFiltroGastos) {
     paginaActual = 1;
     params.append('page', 1);
 
+    // 🔥 VALIDAR QUE HAYA TIPO
+    if (!tipoFiltro) {
+        mostrarModal("error", "Error", "Selecciona un filtro");
+        return;
+    }
+
+    // 🔥 VALIDAR VALOR
     if (
         tipoFiltro !== 'descripcion' &&
-        !(tipoFiltro === 'fecha' && document.getElementById('modoFechaGastos')?.value === 'rango') &&
+        !(tipoFiltro === 'fecha' && document.getElementById('modoFecha')?.value === 'rango') &&
         !valor
     ) {
         mostrarModal("error", "Error", "Selecciona un valor válido");
         return;
     }
 
+
+
     modoFiltro = true;
-    document.getElementById('btnFiltros')?.classList.remove('activo'); // opcional
     document.getElementById('btnFiltrosGastos')?.classList.add('activo');
 
 
