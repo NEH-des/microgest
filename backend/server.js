@@ -14,7 +14,9 @@ client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
 // Middleware para leer JSON
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ["https://neh-des.github.io"]
+}));
 
 
 // Ruta de prueba
@@ -73,7 +75,7 @@ app.delete('/sucursales/:id', (req, res) => {
 // ===============================
 // OBTENER TIPOS DE INGRESOS
 // ===============================
-app.get('/tipos', (req, res) => {
+app.get('/tipos', verificarToken, (req, res) => {
     const sql = 'SELECT id, nombre, categoria FROM tipos ORDER BY nombre';
 
     db.query(sql, (err, results) => {
@@ -669,6 +671,13 @@ app.get('/movimientos/por-tipo', verificarToken, (req, res) => {
         GROUP BY t.nombre
 
     `;
+
+    let params = [req.usuario.id, categoria];
+
+    if (req.query.mes) {
+        sql += ` AND DATE_FORMAT(m.fecha, '%Y-%m') = ?`;
+        params.push(req.query.mes);
+    }
 
     db.query(sql, [req.usuario.id, categoria], (err, result) => {
         if (err) return res.status(500).json(err);

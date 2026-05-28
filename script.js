@@ -15,7 +15,7 @@ let totalPaginasEliminadosIngresos = 1;
 let totalPaginasEliminadosGastos = 1;
 let filtrosEliminadosIngresos = {};
 let filtrosEliminadosGastos = {};
-
+let modoVista = "mes";
 
 
 
@@ -234,6 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const sinDesc = document.getElementById('sinDescripcion')?.checked;
 
             const params = new URLSearchParams();
+            if (modoVista === "mes") {
+                params.append('mes', obtenerMesActual());
+            }
 
             paginaActual = 1;
             params.append('page', 1);
@@ -585,7 +588,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===============================
     // GUARDAR EDICIÓN (PUT)
     // ===============================
-        document.getElementById('formEditar').addEventListener('submit', async (e) => {
+
+    
+    const formEditar = document.getElementById('formEditar');
+
+    if (formEditar) {
+    formEditar.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         if (!ingresoEditandoId) return;
@@ -631,7 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error al editar ingreso:', error);
             mostrarModal("error", "Error", "No se pudo editar el ingreso");
         }
-    });
+    })};
 
     document.getElementById('formEditarGasto').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1449,7 +1457,11 @@ async function cargarSucursales() {
 
 async function cargarIngresosPaginados(pagina = 1) {
     try {
-        const url = `${API_URL}/movimientos?page=${pagina}&categoria=ingreso`;
+        let url = `${API_URL}/movimientos?page=${pagina}&categoria=ingreso`;
+
+        if (modoVista === "mes") {
+            url += `&mes=${obtenerMesActual()}`;
+        }
 
         const data = await fetchConToken(url);
 
@@ -1505,9 +1517,15 @@ async function cargarIngresosPaginados(pagina = 1) {
 
 async function cargarGastosPaginados(pagina = 1) {
     try {
-        const url = `${API_URL}/movimientos?page=${pagina}&categoria=gasto`;
+        
+        let url = `${API_URL}/movimientos?page=${pagina}&categoria=gasto`;
 
-    const data = await fetchConToken(url);
+        if (modoVista === "mes") {
+            url += `&mes=${obtenerMesActual()}`;
+        }
+
+
+        const data = await fetchConToken(url);
 
         const tbody = document.querySelector('#tablaGastos tbody');
         tbody.innerHTML = '';
@@ -1807,8 +1825,10 @@ if (btnAplicarFiltroGastos) {
     const tipoFiltro = document.getElementById('tipoFiltroGastos').value;
     const valor = document.getElementById('valorFiltroGastos')?.value;
     const sinDesc = document.getElementById('sinDescripcionGastos')?.checked;
-
     const params = new URLSearchParams();
+    if (modoVista === "mes") {
+        params.append('mes', obtenerMesActual());
+    }
 
     paginaActual = 1;
     params.append('page', 1);
@@ -2000,6 +2020,12 @@ async function aplicarFiltroConPagina(page) {
     const params = new URLSearchParams(window.filtrosActivos || {});
     params.set('page', page);
 
+    
+    if (modoVista === "mes" && !window.filtrosActivos?.mes) {
+        params.append('mes', obtenerMesActual());
+    }
+
+
     let url = `${API_URL}/movimientos?` + params.toString();
 
     if (seccionActual === 'ingresos') {
@@ -2106,6 +2132,11 @@ async function cargarGraficaDonaIngresos() {
 
     let url = `${API_URL}/movimientos/por-tipo?categoria=ingreso`;
 
+    if (modoVista === "mes") {
+        url += `&mes=${obtenerMesActual()}`;
+    }
+
+
     const data = await fetchConToken(url);
 
     const labels = data.map(d => d.tipo);
@@ -2171,6 +2202,11 @@ async function cargarGraficaDonaGastos() {
 
     let url = `${API_URL}/movimientos/por-tipo?categoria=gasto`;
 
+    if (modoVista === "mes") {
+        url += `&mes=${obtenerMesActual()}`;
+    }
+
+
     const data = await fetchConToken(url);
 
     const labels = data.map(d => d.tipo);
@@ -2226,6 +2262,10 @@ async function cargarSumaTotal(filtros = null) {
     if (filtros) {
         url += '&' + new URLSearchParams(filtros).toString();
     }
+        
+    if (modoVista === "mes" && !filtros) {
+        url += `&mes=${obtenerMesActual()}`;
+    }
 
     const data = await fetchConToken(url);
 
@@ -2238,6 +2278,10 @@ async function cargarSumaTotalGastos(filtros = null) {
 
     if (filtros) {
         url += '&' + new URLSearchParams(filtros).toString();
+    }
+
+    if (modoVista === "mes" && !filtros) {
+        url += `&mes=${obtenerMesActual()}`;
     }
 
     const data = await fetchConToken(url);
@@ -2407,11 +2451,6 @@ async function restaurarMovimiento(id) {
     // recargar tabla eliminados
     cargarEliminadosPaginados('ingreso', paginaEliminadosIngresos);
     cargarEliminadosPaginados('gasto', paginaEliminadosGastos);
-
-
-    // recargar sistema completo
-    cargarMovimientos();
-    actualizarDashboard();
 }
 
 function toggleEliminados() {
@@ -3277,4 +3316,60 @@ function cambiarRango(rango, btn) {
     btn.classList.add('activo');
 
     cargarGrafica();
+}
+
+function obtenerMesActual() {
+    const hoy = new Date();
+    const year = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    return `${year}-${mes}`;
+}
+
+document.getElementById('btnMesActual').addEventListener('click', () => {
+    modoVista = "mes";
+    paginaActual = 1;
+
+    modoFiltro = false;
+    window.filtrosActivos = null;
+
+
+    if (seccionActual === 'ingresos') {
+        cargarIngresosPaginados(1);
+    }
+
+    if (seccionActual === 'gastos') {
+        cargarGastosPaginados(1);
+    }
+
+    actualizarBotonesVista();
+});
+
+document.getElementById('btnTodos').addEventListener('click', () => {
+    modoVista = "todos";
+    paginaActual = 1;
+
+    modoFiltro = false;
+    window.filtrosActivos = null;
+
+    if (seccionActual === 'ingresos') {
+        cargarIngresosPaginados(1);
+    }
+
+    if (seccionActual === 'gastos') {
+        cargarGastosPaginados(1);
+    }
+
+    actualizarBotonesVista();
+});
+
+
+function actualizarBotonesVista() {
+    document.getElementById('btnMesActual').classList.remove('activo');
+    document.getElementById('btnTodos').classList.remove('activo');
+
+    if (modoVista === 'mes') {
+        document.getElementById('btnMesActual').classList.add('activo');
+    } else {
+        document.getElementById('btnTodos').classList.add('activo');
+    }
 }
