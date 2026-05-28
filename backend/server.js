@@ -1376,8 +1376,10 @@ async function enviarReporteCorreo(email, bufferPDF) {
         console.log("✅ PDF enviado con Brevo");
 
     } catch (error) {
-        console.error("❌ Error Brevo PDF:", error);
-    }
+            console.error("❌ Error Brevo PDF:", error.response?.body || error.message);
+            throw error; // 🔥 CRÍTICO
+        }
+
 }
 
 function limpiarPendientesExpirados() {
@@ -1480,26 +1482,38 @@ app.get('/reporte', verificarToken, (req, res) => {
 
         doc.on('data', buffers.push.bind(buffers));
 
+    doc.on('end', async () => {
+        const pdfData = Buffer.concat(buffers);
+        const emailUsuario = userResult?.[0]?.email;
 
-        doc.on('end', async () => {
-            const pdfData = Buffer.concat(buffers);
+        if (!emailUsuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
 
-            const emailUsuario = userResult?.[0]?.email;
+        console.log("📧 Intentando enviar reporte a:", emailUsuario);
+        console.log("📄 Tamaño PDF:", pdfData.length);
 
-            if (!emailUsuario) {
-                return res.status(404).json({ message: 'Usuario no encontrado' });
-            }
+        try {
 
-            // ✅ RESPONDER PRIMERO
+            await enviarReporteCorreo(emailUsuario, pdfData);
+
+            console.log("✅ ENVÍO CONFIRMADO");
+
             res.json({
                 success: true,
-                message: 'Reporte enviado'
+                message: 'Reporte enviado correctamente'
             });
 
-            // ✅ ENVIAR DESPUÉS (NO BLOQUEA)
-            enviarReporteCorreo(emailUsuario, pdfData)
-                .catch(error => console.error("Error email:", error));
-        });
+        } catch (error) {
+
+            console.error("🔥 ERROR REAL DE ENVÍO:", error.response?.body || error);
+
+            res.status(500).json({
+                success: false,
+                message: 'Error enviando el correo'
+            });
+        }
+    });
 
 
 
