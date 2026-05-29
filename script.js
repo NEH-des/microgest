@@ -192,34 +192,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             else if (tipo === 'fecha') {
+
+                const opcionesFecha = modoVista === "mes"
+                    ? `
+                        <option value="dia">Día específico</option>
+                    `
+                    : `
+                        <option value="dia">Día específico</option>
+                        <option value="mes">Mes</option>
+                        <option value="anio">Año</option>
+                        <option value="rango">Rango de fechas</option>
+                    `;
+
                 contenedor.innerHTML = `
                     <div class="grupo-fecha">
-                        <select id="modoFechaGastos">
-                            <option value="dia">Día específico</option>
-                            <option value="mes">Mes</option>
-                            <option value="anio">Año</option>
-                            <option value="rango">Rango de fechas</option>
+                        <select id="modoFecha">
+                            ${opcionesFecha}
                         </select>
-                        <div id="inputFechaGastos"></div>
+                        <div id="inputFecha"></div>
                     </div>
                 `;
 
-                const modoSelect = document.getElementById('modoFechaGastos');
+                const modoSelect = document.getElementById('modoFecha');
 
                 modoSelect.addEventListener('change', (e) => {
                     const modo = e.target.value;
-                    const input = document.getElementById('inputFechaGastos');
+                    const input = document.getElementById('inputFecha');
 
                     if (modo === 'dia') {
-                        input.innerHTML = `<input type="date" id="valorFiltroGastos">`;
+                        input.innerHTML = `<input type="date" id="valorFiltro">`;
                     }
 
                     else if (modo === 'mes') {
-                        input.innerHTML = `<input type="month" id="valorFiltroGastos">`;
+                        input.innerHTML = `<input type="month" id="valorFiltro">`;
                     }
 
                     else if (modo === 'anio') {
-                        input.innerHTML = `<input type="number" id="valorFiltroGastos">`;
+                        input.innerHTML = `<input type="number" id="valorFiltro" placeholder="Ej: 2026">`;
                     }
 
                     else if (modo === 'rango') {
@@ -368,13 +377,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         else if (tipo === 'fecha') {
 
+            const opcionesFecha = modoVista === "mes"
+                ? `
+                    <option value="dia">Día específico</option>
+                `
+                : `
+                    <option value="dia">Día específico</option>
+                    <option value="mes">Mes</option>
+                    <option value="anio">Año</option>
+                    <option value="rango">Rango de fechas</option>
+                `;
+
             contenedor.innerHTML = `
                 <div class="grupo-fecha">
                     <select id="modoFecha">
-                        <option value="dia">Día específico</option>
-                        <option value="mes">Mes</option>
-                        <option value="anio">Año</option>
-                        <option value="rango">Rango de fechas</option>
+                        ${opcionesFecha}
                     </select>
                     <div id="inputFecha"></div>
                 </div>
@@ -413,7 +430,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             modoSelect.dispatchEvent(new Event('change'));
         }
-
 
     })};
 
