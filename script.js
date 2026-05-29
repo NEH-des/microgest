@@ -206,39 +206,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 contenedor.innerHTML = `
                     <div class="grupo-fecha">
-                        <select id="modoFecha">
+                        <select id="modoFechaGastos">
                             ${opcionesFecha}
                         </select>
-                        <div id="inputFecha"></div>
+                        <div id="inputFechaGastos"></div>
                     </div>
                 `;
 
-                const modoSelect = document.getElementById('modoFecha');
+                const modoSelect = document.getElementById('modoFechaGastos');
 
                 modoSelect.addEventListener('change', (e) => {
                     const modo = e.target.value;
-                    const input = document.getElementById('inputFecha');
+                    const input = document.getElementById('inputFechaGastos');
 
                     if (modo === 'dia') {
-                        input.innerHTML = `<input type="date" id="valorFiltro">`;
+                        input.innerHTML = `<input type="date" id="valorFiltroGastos">`;
                     }
 
                     else if (modo === 'mes') {
-                        input.innerHTML = `<input type="month" id="valorFiltro">`;
+                        input.innerHTML = `<input type="month" id="valorFiltroGastos">`;
                     }
 
                     else if (modo === 'anio') {
-                        input.innerHTML = `<input type="number" id="valorFiltro" placeholder="Ej: 2026">`;
+                        input.innerHTML = `<input type="number" id="valorFiltroGastos" placeholder="Ej: 2026">`;
                     }
 
                     else if (modo === 'rango') {
                         input.innerHTML = `
                             <div class="grupo-fecha">
                                 <label>Desde</label>
-                                <input type="date" id="fechaInicio">
+                                <input type="date" id="fechaInicioGastos">
 
                                 <label>Hasta</label>
-                                <input type="date" id="fechaFin">
+                                <input type="date" id="fechaFinGastos">
                             </div>
                         `;
                     }
@@ -1913,15 +1913,32 @@ if (btnAplicarFiltroGastos) {
     }
 
     // 🔥 VALIDAR VALOR
-    if (
+    if (tipoFiltro === 'fecha') {
+
+        const modo = document.getElementById('modoFechaGastos')?.value;
+
+        if (modo === 'rango') {
+            const inicio = document.getElementById('fechaInicioGastos')?.value;
+            const fin = document.getElementById('fechaFinGastos')?.value;
+
+            if (!inicio || !fin) {
+                mostrarModal("error", "Error", "Selecciona un rango válido");
+                return;
+            }
+        } else {
+            if (!valor) {
+                mostrarModal("error", "Error", "Selecciona un valor válido");
+                return;
+            }
+        }
+
+    } else if (
         tipoFiltro !== 'descripcion' &&
-        !(tipoFiltro === 'fecha' && document.getElementById('modoFecha')?.value === 'rango') &&
         !valor
     ) {
         mostrarModal("error", "Error", "Selecciona un valor válido");
         return;
     }
-
 
 
     modoFiltro = true;
@@ -1953,8 +1970,8 @@ if (btnAplicarFiltroGastos) {
 
         
         if (modo === 'rango') {
-            const inicio = document.getElementById('fechaInicio').value;
-            const fin = document.getElementById('fechaFin').value;
+            const inicio = document.getElementById('fechaInicioGastos').value;
+            const fin = document.getElementById('fechaFinGastos').value;
 
             if (!inicio || !fin) {
                 mostrarModal("error", "Error", "Selecciona un rango válido");
